@@ -1,4 +1,4 @@
-from urllib import response
+from typing import List
 
 from fastapi import FastAPI, Depends, status, Response, HTTPException
 from . import schemas, models
@@ -18,7 +18,7 @@ def get_db():
         db.close()
 
 
-@app.get("/blog")
+@app.get("/blog", response_model=List[schemas.ShowBlog])
 def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
@@ -34,7 +34,7 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.get("/blog/{id}", status_code=status.HTTP_200_OK)
+@app.get("/blog/{id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog)
 def show(id: int, response: Response, db: Session = Depends(get_db)):
     # blog = db.query(models.Blog).get(id)
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
