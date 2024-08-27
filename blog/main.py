@@ -63,3 +63,12 @@ def destroy(id: int, db: Session = Depends(get_db)):
     blog.delete(synchronize_session=False)
     db.commit()
     return
+
+
+@app.post("/user")
+def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    new_user = models.User(**request.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
